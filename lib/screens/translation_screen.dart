@@ -33,16 +33,21 @@ class _TranslationScreenState extends State<TranslationScreen> {
   }
 
   Future<void> _initTts() async {
-    // Obtén las voces y conviértelas a Map<String,String>
-    final rawVoices = await _tts.getVoices; // List<dynamic>
+    final rawVoices = await _tts.getVoices;
     if (rawVoices != null) {
-      _voices = rawVoices.map<Map<String, String>>((v) {
-        final map = v as Map;
-        return {
-          'name': map['name'] as String,
-          'locale': map['locale'] as String,
-        };
-      }).toList();
+      _voices = rawVoices
+          .map<Map<String, String>>((v) {
+            final map = v as Map;
+            return {
+              'name': map['name'] as String,
+              'locale': map['locale'] as String,
+            };
+          })
+          .where(
+            (Map<String, String> voice) => // <-- Tipo explícito
+                (voice['locale']?.toLowerCase() ?? '').startsWith('es'),
+          )
+          .toList();
     }
 
     if (_voices.isNotEmpty) {
@@ -78,7 +83,7 @@ class _TranslationScreenState extends State<TranslationScreen> {
   void _simulateTranslation() {
     if (!_isTranslating) return;
     setState(() {
-      _currentTranslation = 'Hola';
+      _currentTranslation = 'Perraco perrete perrunflo';
       _history.insert(0, _currentTranslation);
     });
     _speak(_currentTranslation);
